@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Todo</string>
+
+    <string name="welcome_word">Welcome</string>
+
+    <string name="tips_input_empty">input can not be empty</string>
+    <string name="submit">add a todo</string>
+    <string name="tips_input_title">input title</string>
+    <string name="tips_remind_by_time">remind me by time</string>
+    <string name="tips_remind_by_location">remind me by location</string>
+</resources>

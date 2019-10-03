@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
         android:elevation="4dp"
-        app:title="todo-edit"
+        app:title="Todo-edit"
         app:titleTextColor="@color/white" />
 
     <LinearLayout
@@ -54,6 +54,22 @@
             android:src="@drawable/ic_delete" />
     </LinearLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.6dp"
+        android:background="#ddd" />
+
+    <EditText
+        android:id="@+id/mEtTodoDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:gravity="left|top"
+        android:hint="add description"
+        android:minHeight="100dp"
+        android:paddingHorizontal="15dp"
+        android:paddingVertical="15dp" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -84,11 +100,12 @@
                     <TextView
                         android:id="@+id/mTvRemindByTime"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="wrap_content"
                         android:background="?selectableItemBackground"
                         android:drawableLeft="@drawable/ic_time"
                         android:drawablePadding="8dp"
                         android:gravity="center_vertical"
+                        android:minHeight="50dp"
                         android:paddingHorizontal="15dp"
                         android:text="@string/tips_remind_by_time" />
 
@@ -100,11 +117,12 @@
                     <TextView
                         android:id="@+id/mTvRemindByLocation"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="wrap_content"
                         android:background="?selectableItemBackground"
                         android:drawableLeft="@drawable/ic_location"
                         android:drawablePadding="8dp"
                         android:gravity="center_vertical"
+                        android:minHeight="50dp"
                         android:paddingHorizontal="15dp"
                         android:text="@string/tips_remind_by_location" />
                 </LinearLayout>
@@ -170,10 +188,10 @@
                             android:id="@+id/mBtnRefreshLocation"
                             android:layout_width="50dp"
                             android:layout_height="50dp"
-                            android:scaleType="center"
-                            android:background="?selectableItemBackground"
                             android:layout_marginRight="15dp"
+                            android:background="?selectableItemBackground"
                             android:padding="10dp"
+                            android:scaleType="center"
                             android:src="@drawable/ic_refresh" />
 
                     </LinearLayout>

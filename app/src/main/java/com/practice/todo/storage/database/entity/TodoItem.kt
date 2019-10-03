@@ -14,6 +14,7 @@ data class TodoItem(
     @PrimaryKey(autoGenerate = true) var id: Int = 0,
     var title: String = "",
     var isDone: Boolean = false,
+    var description: String = "",
     @Ignore var remindTimeMillis: Long = 0,
     @Ignore var remindLocation: Location? = null
 ) : Parcelable {
@@ -21,6 +22,7 @@ data class TodoItem(
         parcel.readInt(),
         parcel.readString(),
         parcel.readByte() != 0.toByte(),
+        parcel.readString(),
         parcel.readLong(),
         parcel.readParcelable(Location::class.java.classLoader)
     )
@@ -29,6 +31,7 @@ data class TodoItem(
         parcel.writeInt(id)
         parcel.writeString(title)
         parcel.writeByte(if (isDone) 1 else 0)
+        parcel.writeString(description)
         parcel.writeLong(remindTimeMillis)
         parcel.writeParcelable(remindLocation, flags)
     }

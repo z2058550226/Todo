@@ -23,7 +23,6 @@ import java.util.*
 class RemindService : CoroutineService() {
 
     companion object {
-        private const val DISTANCE_TO_REMIND_IN_METER = 500f
         private const val NOTIFICATION_CHANNEL_ID = "10007"
         private const val FOREGROUND_ID = 41441
         private const val DEFAULT_NTF_ID = "todo_practice"

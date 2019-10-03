@@ -29,6 +29,7 @@ import com.practice.todo.storage.database.entity.TodoSubItem
 import com.practice.todo.util.LinearLayoutListHelper
 import com.practice.todo.util.LocationUtil
 import com.practice.todo.util.bindView
+import com.practice.todo.util.formatToTime
 import kotlinx.android.synthetic.main.activity_todo_edit.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -119,6 +120,15 @@ class TodoEditActivity : CoroutineActivity() {
                 }
             }
         }
+        mEtTodoDescription.addTextChangedListener {
+            val editString = it?.toString()?.trim() ?: ""
+            launch {
+                mTodoItem.description = editString
+                withContext(Dispatchers.IO) {
+                    mTodoItemDao.update(mTodoItem)
+                }
+            }
+        }
         mFabAdd.setOnClickListener {
             InputDialog.show(this) { title ->
                 launch {
@@ -150,9 +160,10 @@ class TodoEditActivity : CoroutineActivity() {
                 }
             }
         }
-        mTvRemindByLocation.setOnClickListener {
+        mBtnRefreshLocation.setOnClickListener {
             if (isGrantedPms) {
-                prepareToLocation()
+                refreshCurrentLocation()
+                toast("refresh over")
             } else {
                 ActivityCompat.requestPermissions(
                     this,
@@ -160,10 +171,9 @@ class TodoEditActivity : CoroutineActivity() {
                 )
             }
         }
-        mBtnRefreshLocation.setOnClickListener {
+        mTvRemindByLocation.setOnClickListener {
             if (isGrantedPms) {
-                refreshCurrentLocation()
-                toast("refresh over")
+                prepareToLocation()
             } else {
                 ActivityCompat.requestPermissions(
                     this,
@@ -191,6 +201,8 @@ class TodoEditActivity : CoroutineActivity() {
                                 toast("Please select a future time")
                                 return@OnTimeSetListener
                             }
+                            mTvRemindByTime.text =
+                                "It will remind you at ${selectedTime.timeInMillis.formatToTime()}"
                             val serIntent = Intent(this, RemindService::class.java)
                             tempItem.remindTimeMillis = selectedTime.timeInMillis
                             serIntent.putExtra(RemindService.INTENT_EXT_TODO_ITEM, tempItem)
@@ -245,6 +257,7 @@ class TodoEditActivity : CoroutineActivity() {
         val subItemArray = withContext(Dispatchers.IO) {
             mTodoSubItemDao.loadByParentId(mTodoItem.id)
         }
+        mEtTodoDescription.setText(mTodoItem.description)
         mSubAdapter.refreshData(subItemArray.toMutableList())
         mCbIsDone.isChecked = mTodoItem.isDone
         if (isGrantedPms) {

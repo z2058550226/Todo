@@ -33,9 +33,12 @@ object RemindUtil {
                 App.instance,
                 default_notification_channel_id
             )
+        val contentText = if (todoItem.description.isEmpty())
+            "You can mark this todo is done"
+        else todoItem.description
         mBuilder.setContentTitle(todoItem.title)
             .setContentIntent(pendingIntent)
-            .setContentText("You can mark this todo is done")
+            .setContentText(contentText)
             .setSmallIcon(R.drawable.ic_launcher)
             .setAutoCancel(true)
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {

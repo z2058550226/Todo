@@ -26,10 +26,7 @@ import com.practice.todo.service.RemindService
 import com.practice.todo.storage.database.db
 import com.practice.todo.storage.database.entity.TodoItem
 import com.practice.todo.storage.database.entity.TodoSubItem
-import com.practice.todo.util.LinearLayoutListHelper
-import com.practice.todo.util.LocationUtil
-import com.practice.todo.util.bindView
-import com.practice.todo.util.formatToTime
+import com.practice.todo.util.*
 import kotlinx.android.synthetic.main.activity_todo_edit.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -201,8 +198,7 @@ class TodoEditActivity : CoroutineActivity() {
                                 toast("Please select a future time")
                                 return@OnTimeSetListener
                             }
-                            mTvRemindByTime.text =
-                                "It will remind you at ${selectedTime.timeInMillis.formatToTime()}"
+                            mTvRemindTime.text = selectedTime.timeInMillis.formatToTime()
                             val serIntent = Intent(this, RemindService::class.java)
                             tempItem.remindTimeMillis = selectedTime.timeInMillis
                             serIntent.putExtra(RemindService.INTENT_EXT_TODO_ITEM, tempItem)
@@ -249,15 +245,30 @@ class TodoEditActivity : CoroutineActivity() {
         startService(serIntent)
     }
 
+    @SuppressLint("SetTextI18n")
     private fun refreshView() = launch {
         mTodoItem = withContext(Dispatchers.IO) {
             mTodoItemDao.loadById(mParentId)
         }
         mEtTitle.setText(mTodoItem.title)
+        mEtTodoDescription.setText(mTodoItem.description)
+        if (InMemoryCache.RemindLocationCache.itemDbId == mTodoItem.id) {
+            mEtLongitude.setText(
+                InMemoryCache.RemindLocationCache.remindLocation?.longitude?.toString() ?: ""
+            )
+            mEtLatitude.setText(
+                InMemoryCache.RemindLocationCache.remindLocation?.longitude?.toString() ?: ""
+            )
+        }
+        if (InMemoryCache.RemindTimeCache.itemDbId == mTodoItem.id) {
+            mTodoItem.remindTimeMillis = InMemoryCache.RemindTimeCache.remindTimeMills
+            mTvRemindTime.text = mTodoItem.remindTimeMillis.formatToTime()
+        }
+
         val subItemArray = withContext(Dispatchers.IO) {
             mTodoSubItemDao.loadByParentId(mTodoItem.id)
         }
-        mEtTodoDescription.setText(mTodoItem.description)
+
         mSubAdapter.refreshData(subItemArray.toMutableList())
         mCbIsDone.isChecked = mTodoItem.isDone
         if (isGrantedPms) {

@@ -14,7 +14,9 @@ import com.practice.todo.MainActivity
 import com.practice.todo.R
 import com.practice.todo.base.CoroutineService
 import com.practice.todo.storage.database.entity.TodoItem
+import com.practice.todo.util.InMemoryCache
 import com.practice.todo.util.RemindUtil
+import com.practice.todo.util.formatToTime
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -39,6 +41,8 @@ class RemindService : CoroutineService() {
         startForeground(FOREGROUND_ID, notification)
         if (todoItem != null) {
             launch {
+                InMemoryCache.RemindTimeCache.remindTimeMills = todoItem.remindTimeMillis
+                InMemoryCache.RemindTimeCache.itemDbId = todoItem.id
                 delay(todoItem.remindTimeMillis - System.currentTimeMillis())
                 RemindUtil.remind(todoItem)
                 stopSelf()
@@ -47,7 +51,6 @@ class RemindService : CoroutineService() {
         return super.onStartCommand(intent, flags, startId)
     }
 
-    @SuppressLint("SimpleDateFormat")
     private fun getForegroundNotification(todoItem: TodoItem?): Notification {
         val ntfIntent = Intent(this, MainActivity::class.java)
         ntfIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -60,14 +63,14 @@ class RemindService : CoroutineService() {
         val contentText: String
         if (todoItem != null) {
             contentTitle = todoItem.title
-            contentText =
-                "Remind time: " + SimpleDateFormat("MM-dd HH:mm:ss").format(Date(todoItem.remindTimeMillis))
+            contentText = "Remind time: " + todoItem.remindTimeMillis.formatToTime()
         } else {
             contentTitle = "Todo Reminder Service"
             contentText = "It used to keep reminder running."
         }
 
-        val builder = NotificationCompat.Builder(this,
+        val builder = NotificationCompat.Builder(
+            this,
             DEFAULT_NTF_ID
         )
             .setContentTitle(contentTitle)

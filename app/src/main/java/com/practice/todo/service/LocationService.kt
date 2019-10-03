@@ -14,6 +14,7 @@ import com.practice.todo.MainActivity
 import com.practice.todo.R
 import com.practice.todo.base.CoroutineService
 import com.practice.todo.storage.database.entity.TodoItem
+import com.practice.todo.util.InMemoryCache
 import com.practice.todo.util.LocationUtil
 import com.practice.todo.util.RemindUtil
 import kotlinx.coroutines.delay
@@ -43,6 +44,8 @@ class LocationService : CoroutineService() {
             startForeground(FOREGROUND_ID, notification)
             val targetLocation = todoItem.remindLocation
             launch {
+                InMemoryCache.RemindLocationCache.itemDbId = todoItem.id
+                InMemoryCache.RemindLocationCache.remindLocation = todoItem.remindLocation
                 while (true) {
                     LocationUtil.getNetWorkLocation()?.apply {
                         val distance = this.distanceTo(targetLocation)
@@ -84,7 +87,8 @@ class LocationService : CoroutineService() {
             "target location wrong"
         }
 
-        val builder = NotificationCompat.Builder(this,
+        val builder = NotificationCompat.Builder(
+            this,
             DEFAULT_NTF_ID
         )
             .setContentTitle(contentTitle)

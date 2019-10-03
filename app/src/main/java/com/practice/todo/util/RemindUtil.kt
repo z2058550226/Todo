@@ -16,12 +16,12 @@ import com.practice.todo.storage.database.entity.TodoItem
 /**
  * Created by suikajy on 2019.10.2
  */
-object NotificationUtil {
+object RemindUtil {
 
     private const val NOTIFICATION_CHANNEL_ID = "10051"
     private const val default_notification_channel_id = "todo_practice2"
 
-    fun notification(todoItem: TodoItem) {
+    fun remind(todoItem: TodoItem) {
         val notificationIntent = Intent(App.instance, MainActivity::class.java)
         notificationIntent.putExtra("fromNotification", true)
         notificationIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP

@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practice.todo.adapter.TodoListAdapter
-import com.practice.todo.base.BaseActivity
+import com.practice.todo.base.CoroutineActivity
 import com.practice.todo.storage.database.db
 import com.practice.todo.storage.database.entity.TodoItem
 import com.practice.todo.util.SpacesItemDecoration
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.anko.dip
 
-class MainActivity : BaseActivity() {
+class MainActivity : CoroutineActivity() {
 
     companion object {
         fun start(activity: Activity) {
@@ -46,6 +46,7 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun addTodo(view: View) {
         InputDialog.show(this) {
             launch {

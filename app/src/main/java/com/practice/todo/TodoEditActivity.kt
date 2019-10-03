@@ -1,15 +1,16 @@
 package com.practice.todo
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Paint
+import android.location.Location
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.CheckBox
@@ -19,22 +20,24 @@ import android.widget.LinearLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
-import com.practice.todo.base.BaseActivity
+import com.practice.todo.base.CoroutineActivity
+import com.practice.todo.service.LocationService
+import com.practice.todo.service.RemindService
 import com.practice.todo.storage.database.db
 import com.practice.todo.storage.database.entity.TodoItem
 import com.practice.todo.storage.database.entity.TodoSubItem
 import com.practice.todo.util.LinearLayoutListHelper
-import com.practice.todo.util.NotificationUtil
+import com.practice.todo.util.LocationUtil
 import com.practice.todo.util.bindView
 import kotlinx.android.synthetic.main.activity_todo_edit.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.jetbrains.anko.alert
 import org.jetbrains.anko.toast
-import java.text.SimpleDateFormat
 import java.util.*
 
-class TodoEditActivity : BaseActivity() {
+class TodoEditActivity : CoroutineActivity() {
 
     companion object {
         private const val EXT_ITEM_ID = "item_id"
@@ -56,6 +59,11 @@ class TodoEditActivity : BaseActivity() {
     private lateinit var mSubAdapter: SubItemAdapter
     private val mLatitude: String get() = mEtLatitude.text.trim().toString()
     private val mLongitude: String get() = mEtLongitude.text.trim().toString()
+    private val isGrantedPms: Boolean
+        get() = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,10 +88,20 @@ class TodoEditActivity : BaseActivity() {
             grantResults.isNotEmpty() &&
             grantResults[0] == PackageManager.PERMISSION_GRANTED
         ) {
-            prepareToLocation()
+            refreshView()
+            alert {
+                title = "Authorized success"
+                message = "Whether to remind approaching of the target location which you input?"
+                positiveButton("yes") {
+                    prepareToLocation()
+                    it.dismiss()
+                }
+                negativeButton("no", DialogInterface::dismiss)
+            }.show()
         }
     }
 
+    @SuppressLint("SetTextI18n", "SimpleDateFormat")
     private fun initView() {
         mSubAdapter = SubItemAdapter(mLlSubList)
 
@@ -111,6 +129,14 @@ class TodoEditActivity : BaseActivity() {
                 }
             }
         }
+        mCbIsDone.setOnCheckedChangeListener { _, isChecked ->
+            launch {
+                mTodoItem.isDone = isChecked
+                withContext(Dispatchers.IO) {
+                    mTodoItemDao.update(mTodoItem)
+                }
+            }
+        }
         mEtTitle.addTextChangedListener { et ->
             val editString = et?.toString()
             if (editString.isNullOrEmpty()) {
@@ -125,17 +151,24 @@ class TodoEditActivity : BaseActivity() {
             }
         }
         mTvRemindByLocation.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
+            if (isGrantedPms) {
+                prepareToLocation()
+            } else {
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQ_PERMISSON_CODE
                 )
+            }
+        }
+        mBtnRefreshLocation.setOnClickListener {
+            if (isGrantedPms) {
+                refreshCurrentLocation()
+                toast("refresh over")
             } else {
-                prepareToLocation()
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQ_PERMISSON_CODE
+                )
             }
         }
         mTvRemindByTime.setOnClickListener {
@@ -154,15 +187,14 @@ class TodoEditActivity : BaseActivity() {
                         TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
                             selectedTime.set(Calendar.HOUR_OF_DAY, hourOfDay)
                             selectedTime.set(Calendar.MINUTE, minute)
-                            Handler(Looper.getMainLooper()).postDelayed(
-                                { NotificationUtil.notification(tempItem) },
-                                selectedTime.timeInMillis - currentTime.timeInMillis
-                            )
-                            toast(
-                                "it will notify you at ${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(
-                                    Date(selectedTime.timeInMillis)
-                                )}"
-                            )
+                            if (selectedTime.timeInMillis < System.currentTimeMillis()) {
+                                toast("Please select a future time")
+                                return@OnTimeSetListener
+                            }
+                            val serIntent = Intent(this, RemindService::class.java)
+                            tempItem.remindTimeMillis = selectedTime.timeInMillis
+                            serIntent.putExtra(RemindService.INTENT_EXT_TODO_ITEM, tempItem)
+                            startService(serIntent)
                         },
                         currentTime.get(Calendar.HOUR_OF_DAY),
                         currentTime.get(Calendar.MINUTE),
@@ -178,7 +210,7 @@ class TodoEditActivity : BaseActivity() {
 
     private fun prepareToLocation() {
         if (mLongitude.isEmpty() || mLatitude.isEmpty()) {
-            toast("empty input")
+            toast("please input you target location")
             return
         }
         val targetLongitude = mLongitude.toDouble()
@@ -191,14 +223,18 @@ class TodoEditActivity : BaseActivity() {
             toast("illegal latitude")
             return
         }
-        LocationTask.startLocation(targetLongitude, targetLatitude,this) { curLocation, isNotify ->
-            mTvCurLatitude.text = curLocation.latitude.toString()
-            mTvCurLongitude.text = curLocation.longitude.toString()
-            if (isNotify) {
-                NotificationUtil.notification(mTodoItem)
-            }
+        LocationUtil.getNetWorkLocation()?.apply {
+            mTvCurLatitude.text = latitude.toString()
+            mTvCurLongitude.text = longitude.toString()
         }
-
+        val serIntent = Intent(this, LocationService::class.java)
+        val tempItem = mTodoItem.copy()
+        tempItem.remindLocation = Location("remind_loc").apply {
+            latitude = targetLatitude
+            longitude = targetLongitude
+        }
+        serIntent.putExtra(LocationService.INTENT_EXT_TODO_ITEM, tempItem)
+        startService(serIntent)
     }
 
     private fun refreshView() = launch {
@@ -210,6 +246,17 @@ class TodoEditActivity : BaseActivity() {
             mTodoSubItemDao.loadByParentId(mTodoItem.id)
         }
         mSubAdapter.refreshData(subItemArray.toMutableList())
+        mCbIsDone.isChecked = mTodoItem.isDone
+        if (isGrantedPms) {
+            refreshCurrentLocation()
+        }
+    }
+
+    private fun refreshCurrentLocation() {
+        LocationUtil.getNetWorkLocation()?.apply {
+            mTvCurLatitude.text = latitude.toString()
+            mTvCurLongitude.text = longitude.toString()
+        }
     }
 
     inner class SubItemAdapter(parent: LinearLayout) :

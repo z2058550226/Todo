@@ -23,7 +23,7 @@
         android:orientation="horizontal">
 
         <CheckBox
-            android:id="@+id/mCbSubIsDone"
+            android:id="@+id/mCbIsDone"
             android:layout_width="30dp"
             android:layout_height="50dp"
             android:layout_marginLeft="15dp"
@@ -86,6 +86,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:background="?selectableItemBackground"
+                        android:drawableLeft="@drawable/ic_time"
+                        android:drawablePadding="8dp"
                         android:gravity="center_vertical"
                         android:paddingHorizontal="15dp"
                         android:text="@string/tips_remind_by_time" />
@@ -100,6 +102,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:background="?selectableItemBackground"
+                        android:drawableLeft="@drawable/ic_location"
+                        android:drawablePadding="8dp"
                         android:gravity="center_vertical"
                         android:paddingHorizontal="15dp"
                         android:text="@string/tips_remind_by_location" />
@@ -128,6 +132,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
+                            android:background="@null"
                             android:hint="longitude"
                             android:inputType="numberDecimal" />
 
@@ -136,6 +141,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
+                            android:background="@null"
                             android:hint="latitude"
                             android:inputType="numberDecimal" />
 
@@ -147,12 +153,30 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:layout_marginHorizontal="10dp"
-                        android:gravity="center_vertical"
-                        android:text="Your current location: " />
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:text="Your current location: " />
+
+                        <ImageView
+                            android:id="@+id/mBtnRefreshLocation"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:scaleType="center"
+                            android:background="?selectableItemBackground"
+                            android:layout_marginRight="15dp"
+                            android:padding="10dp"
+                            android:src="@drawable/ic_refresh" />
+
+                    </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -165,14 +189,14 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="0" />
+                            android:text="no data" />
 
                         <TextView
                             android:id="@+id/mTvCurLatitude"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="0" />
+                            android:text="no data" />
 
                     </LinearLayout>
                 </LinearLayout>

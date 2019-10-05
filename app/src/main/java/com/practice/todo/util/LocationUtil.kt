@@ -9,15 +9,18 @@ import androidx.core.app.ActivityCompat
 import com.practice.todo.App
 import org.jetbrains.anko.toast
 
+
 /**
  * Created by suikajy on 2019.10.2
  */
 object LocationUtil {
 
-    fun getNetWorkLocation(): Location? {
-        var location: Location? = null
+    fun getLocation(): Location? {
+        var resultLocation: Location? = null
+
         val locationManager =
             App.instance.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
         if (ActivityCompat.checkSelfPermission(
                 App.instance,
                 Manifest.permission.ACCESS_COARSE_LOCATION
@@ -27,9 +30,17 @@ object LocationUtil {
             return null
         }
 
-        if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+        val enabledProviders = locationManager.getProviders(true)
+        for (provider in enabledProviders) {
+            val lastKnownLocation = locationManager.getLastKnownLocation(provider) ?: continue
+
+            if (resultLocation == null || lastKnownLocation.accuracy < resultLocation.accuracy) {
+                resultLocation = lastKnownLocation
+            }
         }
-        return location
+        resultLocation ?: App.instance.toast("please check if the network or gps is turned on")
+
+        return resultLocation
     }
+
 }

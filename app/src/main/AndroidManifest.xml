@@ -16,6 +16,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyB0K35gzqihGXN514d9Ly_blGUnL96FVTg" />
+
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait"
@@ -34,6 +39,7 @@
             android:name=".TodoEditActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity android:name=".LocationSelActivity" />
 
         <service android:name=".service.RemindService" />
         <service android:name=".service.LocationService" />

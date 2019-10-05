@@ -47,9 +47,14 @@ class LocationService : CoroutineService() {
                 InMemoryCache.RemindLocationCache.itemDbId = todoItem.id
                 InMemoryCache.RemindLocationCache.remindLocation = todoItem.remindLocation
                 while (true) {
-                    LocationUtil.getNetWorkLocation()?.apply {
+                    LocationUtil.getLocation()?.apply {
                         val distance = this.distanceTo(targetLocation)
                         if (distance < DISTANCE_TO_REMIND_IN_METER) {
+                            if (todoItem.description.isEmpty()) {
+                                todoItem.description = "You have arrived at your destination"
+                            }
+                            InMemoryCache.RemindLocationCache.itemDbId = 0
+                            InMemoryCache.RemindLocationCache.remindLocation = null
                             RemindUtil.remind(todoItem)
                             stopSelf()
                         }
@@ -75,7 +80,7 @@ class LocationService : CoroutineService() {
         val contentTitle: String = todoItem.title
         val remindLocation = todoItem.remindLocation
         val contentText = if (remindLocation != null) {
-            val netWorkLocation = LocationUtil.getNetWorkLocation()
+            val netWorkLocation = LocationUtil.getLocation()
             if (netWorkLocation != null) {
                 "It's ${netWorkLocation.distanceTo(remindLocation)} meters from the reminder site."
             } else {

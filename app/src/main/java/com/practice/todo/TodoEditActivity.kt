@@ -20,6 +20,7 @@ import android.widget.LinearLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
+import com.google.android.gms.maps.model.LatLng
 import com.practice.todo.base.CoroutineActivity
 import com.practice.todo.service.LocationService
 import com.practice.todo.service.RemindService
@@ -41,7 +42,7 @@ class TodoEditActivity : CoroutineActivity() {
         private const val EXT_ITEM_ID = "item_id"
         const val REQ_CODE = 0x22
         const val RES_CODE = 0x33
-        const val REQ_PERMISSON_CODE = 0x11
+        const val REQ_PERMISSION_CODE = 0x11
 
         fun start(activity: Activity, itemId: Int) {
             val intent = Intent(activity, TodoEditActivity::class.java)
@@ -55,8 +56,6 @@ class TodoEditActivity : CoroutineActivity() {
     private val mTodoSubItemDao by lazy { db.todoSubItemDao() }
     private lateinit var mTodoItem: TodoItem
     private lateinit var mSubAdapter: SubItemAdapter
-    private val mLatitude: String get() = mEtLatitude.text.trim().toString()
-    private val mLongitude: String get() = mEtLongitude.text.trim().toString()
     private val isGrantedPms: Boolean
         get() = ContextCompat.checkSelfPermission(
             this,
@@ -82,20 +81,34 @@ class TodoEditActivity : CoroutineActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (REQ_PERMISSON_CODE == requestCode &&
+        if (REQ_PERMISSION_CODE == requestCode &&
             grantResults.isNotEmpty() &&
             grantResults[0] == PackageManager.PERMISSION_GRANTED
         ) {
             refreshView()
             alert {
                 title = "Authorized success"
-                message = "Whether to remind approaching of the target location which you input?"
+                message = "Whether to remind approaching of the target location which you selected?"
                 positiveButton("yes") {
-                    prepareToLocation()
+                    LocationSelActivity.start(this@TodoEditActivity)
                     it.dismiss()
                 }
                 negativeButton("no", DialogInterface::dismiss)
             }.show()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == LocationSelActivity.REQ_CODE &&
+            resultCode == LocationSelActivity.RES_CODE &&
+            data != null
+        ) {
+            val targetLatLng = data.getParcelableExtra<LatLng>(LocationSelActivity.IE_LOCATION)
+            val targetLocation = Location("targetLocation")
+            targetLocation.longitude = targetLatLng.longitude
+            targetLocation.latitude = targetLatLng.latitude
+            prepareToLocation(targetLocation)
         }
     }
 
@@ -157,24 +170,13 @@ class TodoEditActivity : CoroutineActivity() {
                 }
             }
         }
-        mBtnRefreshLocation.setOnClickListener {
-            if (isGrantedPms) {
-                refreshCurrentLocation()
-                toast("refresh over")
-            } else {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQ_PERMISSON_CODE
-                )
-            }
-        }
         mTvRemindByLocation.setOnClickListener {
             if (isGrantedPms) {
-                prepareToLocation()
+                LocationSelActivity.start(this)
             } else {
                 ActivityCompat.requestPermissions(
                     this,
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQ_PERMISSON_CODE
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQ_PERMISSION_CODE
                 )
             }
         }
@@ -216,31 +218,12 @@ class TodoEditActivity : CoroutineActivity() {
         }
     }
 
-    private fun prepareToLocation() {
-        if (mLongitude.isEmpty() || mLatitude.isEmpty()) {
-            toast("please input you target location")
-            return
-        }
-        val targetLongitude = mLongitude.toDouble()
-        val targetLatitude = mLatitude.toDouble()
-        if (targetLongitude > 180 || targetLongitude < -180) {
-            toast("illegal longitude")
-            return
-        }
-        if (targetLatitude > 90 || targetLatitude < -90) {
-            toast("illegal latitude")
-            return
-        }
-        LocationUtil.getNetWorkLocation()?.apply {
-            mTvCurLatitude.text = latitude.toString()
-            mTvCurLongitude.text = longitude.toString()
-        }
+    private fun prepareToLocation(targetLocation: Location) {
+        mTvLatitude.text = targetLocation.latitude.toString()
+        mTvLongitude.text = targetLocation.longitude.toString()
         val serIntent = Intent(this, LocationService::class.java)
         val tempItem = mTodoItem.copy()
-        tempItem.remindLocation = Location("remind_loc").apply {
-            latitude = targetLatitude
-            longitude = targetLongitude
-        }
+        tempItem.remindLocation = targetLocation
         serIntent.putExtra(LocationService.INTENT_EXT_TODO_ITEM, tempItem)
         startService(serIntent)
     }
@@ -253,12 +236,10 @@ class TodoEditActivity : CoroutineActivity() {
         mEtTitle.setText(mTodoItem.title)
         mEtTodoDescription.setText(mTodoItem.description)
         if (InMemoryCache.RemindLocationCache.itemDbId == mTodoItem.id) {
-            mEtLongitude.setText(
+            mTvLongitude.text =
                 InMemoryCache.RemindLocationCache.remindLocation?.longitude?.toString() ?: ""
-            )
-            mEtLatitude.setText(
+            mTvLatitude.text =
                 InMemoryCache.RemindLocationCache.remindLocation?.longitude?.toString() ?: ""
-            )
         }
         if (InMemoryCache.RemindTimeCache.itemDbId == mTodoItem.id) {
             mTodoItem.remindTimeMillis = InMemoryCache.RemindTimeCache.remindTimeMills
@@ -271,16 +252,6 @@ class TodoEditActivity : CoroutineActivity() {
 
         mSubAdapter.refreshData(subItemArray.toMutableList())
         mCbIsDone.isChecked = mTodoItem.isDone
-        if (isGrantedPms) {
-            refreshCurrentLocation()
-        }
-    }
-
-    private fun refreshCurrentLocation() {
-        LocationUtil.getNetWorkLocation()?.apply {
-            mTvCurLatitude.text = latitude.toString()
-            mTvCurLongitude.text = longitude.toString()
-        }
     }
 
     inner class SubItemAdapter(parent: LinearLayout) :

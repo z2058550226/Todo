@@ -11,7 +11,7 @@ class LocationTest {
 
     @Test
     fun testLocation() {
-        val netWorkLocation = LocationUtil.getNetWorkLocation()
+        val netWorkLocation = LocationUtil.getLocation()
         netWorkLocation?.apply {
             Log.e("ttt", netWorkLocation.toString())
         }

@@ -165,76 +165,19 @@
                         android:layout_marginHorizontal="10dp"
                         android:orientation="horizontal">
 
-                        <EditText
-                            android:id="@+id/mEtLongitude"
+                        <TextView
+                            android:id="@+id/mTvLongitude"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:background="@null"
-                            android:hint="longitude"
-                            android:inputType="numberDecimal" />
-
-                        <EditText
-                            android:id="@+id/mEtLatitude"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:background="@null"
-                            android:hint="latitude"
-                            android:inputType="numberDecimal" />
-
-                    </LinearLayout>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                            android:hint="longitude" />
 
                         <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="50dp"
-                            android:layout_marginHorizontal="10dp"
-                            android:layout_weight="1"
-                            android:gravity="center_vertical"
-                            android:text="Your current location: " />
-
-                        <ImageView
-                            android:id="@+id/mBtnRefreshLocation"
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:layout_marginRight="15dp"
-                            android:background="?selectableItemBackground"
-                            android:padding="10dp"
-                            android:scaleType="center"
-                            android:src="@drawable/ic_refresh" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="10dp"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/mTvCurLongitude"
+                            android:id="@+id/mTvLatitude"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="no data" />
-
-                        <TextView
-                            android:id="@+id/mTvCurLatitude"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="no data" />
+                            android:hint="latitude" />
 
                     </LinearLayout>
                 </LinearLayout>

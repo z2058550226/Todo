@@ -2,6 +2,7 @@ package com.practice.todo
 
 import android.app.Application
 
+
 class App : Application() {
 
     companion object {

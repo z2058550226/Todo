@@ -36,7 +36,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TodoEditActivity.Companion.start((Activity) holder.itemView.getContext(), item.getId());
+                TodoEditActivity.start((Activity) holder.itemView.getContext(), item.getId());
             }
         });
     }

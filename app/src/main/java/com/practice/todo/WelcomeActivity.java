@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
-import com.practice.todo.storage.sharedpreferences.SpDel2;
+import com.practice.todo.storage.sharedpreferences.SpDel;
 
 public class WelcomeActivity extends AppCompatActivity {
 
@@ -21,7 +21,7 @@ public class WelcomeActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        if (SpDel2.isFirstRun()) {
+        if (SpDel.isFirstRun()) {
             launchAnim();
         } else {
             MainActivity.start(this);
@@ -70,7 +70,7 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     public void next(View view) {
-        SpDel2.setIsFirstRun(false);
+        SpDel.setIsFirstRun(false);
         MainActivity.start(this);
         finish();
     }

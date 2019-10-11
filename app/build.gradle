@@ -9,13 +9,13 @@ apply plugin: 'kotlin-kapt'
 android {
     signingConfigs {
         debug {
-            storeFile file('/Users/butter/StudioProjects/Todo/app/todo.jks')
+            storeFile file('/Users/suikajy/Desktop/suikajy/code/ASProject/Todo/app/todo.jks')
             storePassword 'qweasd'
             keyPassword 'qweasd'
             keyAlias = 'todo'
         }
         release {
-            storeFile file('/Users/butter/StudioProjects/Todo/app/todo.jks')
+            storeFile file('/Users/suikajy/Desktop/suikajy/code/ASProject/Todo/app/todo.jks')
             storePassword 'qweasd'
             keyAlias = 'todo'
             keyPassword 'qweasd'

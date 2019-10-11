@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 import com.practice.todo.App;
 
-public class SpDel2 {
+public class SpDel {
 
     private static final String APP_SP = "app_sp";
     private static final String IS_FIRST_RUN = "is_first_run";

@@ -15,6 +15,7 @@ import org.jetbrains.anko.toast
  */
 object LocationUtil {
 
+    @JvmStatic
     fun getLocation(): Location? {
         var resultLocation: Location? = null
 

@@ -258,7 +258,10 @@ class TodoEditActivity : CoroutineActivity() {
     }
 
     inner class SubItemAdapter(parent: LinearLayout) :
-        LinearLayoutListHelper.SimpleLinearAdapter<ViewHolder, TodoSubItem>(parent) {
+        LinearLayoutListHelper.SimpleLinearAdapter<ViewHolder, TodoSubItem>(
+            this@TodoEditActivity,
+            parent
+        ) {
 
         override fun onCreateViewHolder(parent: LinearLayout, type: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context)

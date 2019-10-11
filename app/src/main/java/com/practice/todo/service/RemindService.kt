@@ -1,6 +1,5 @@
 package com.practice.todo.service
 
-import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -19,8 +18,6 @@ import com.practice.todo.util.RemindUtil
 import com.practice.todo.util.formatToTime
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.*
 
 class RemindService : CoroutineService() {
 

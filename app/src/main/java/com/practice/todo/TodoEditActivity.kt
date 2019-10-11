@@ -27,7 +27,10 @@ import com.practice.todo.service.RemindService
 import com.practice.todo.storage.database.db
 import com.practice.todo.storage.database.entity.TodoItem
 import com.practice.todo.storage.database.entity.TodoSubItem
-import com.practice.todo.util.*
+import com.practice.todo.util.InMemoryCache
+import com.practice.todo.util.LinearLayoutListHelper
+import com.practice.todo.util.bindView
+import com.practice.todo.util.formatToTime
 import kotlinx.android.synthetic.main.activity_todo_edit.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -140,14 +143,14 @@ class TodoEditActivity : CoroutineActivity() {
             }
         }
         mFabAdd.setOnClickListener {
-            InputDialog.show(this) { title ->
+            InputDialog(this) { content ->
                 launch {
                     withContext(Dispatchers.IO) {
-                        mTodoSubItemDao.insert(TodoSubItem(parentId = mParentId, title = title))
+                        mTodoSubItemDao.insert(TodoSubItem(mParentId, content))
                     }
                     refreshView()
                 }
-            }
+            }.show()
         }
         mCbIsDone.setOnCheckedChangeListener { _, isChecked ->
             launch {

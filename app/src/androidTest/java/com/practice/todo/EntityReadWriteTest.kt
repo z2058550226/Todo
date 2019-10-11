@@ -8,8 +8,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.practice.todo.storage.database.TodoDatabase
 import com.practice.todo.storage.database.dao.TodoSubItemDao
 import com.practice.todo.storage.database.dao.TodoItemDao
-import com.practice.todo.storage.database.entity.TodoSubItem
-import com.practice.todo.storage.database.entity.TodoItem
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before

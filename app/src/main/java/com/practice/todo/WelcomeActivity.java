@@ -21,6 +21,7 @@ public class WelcomeActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        // 判断用户是否是第一次开启app，如果不是，直接开启主页面。
         if (SpDel.isFirstRun()) {
             launchAnim();
         } else {
@@ -29,6 +30,10 @@ public class WelcomeActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 启动welcome的动画，这是一个值动画，根据值回调设置TextView的text
+     * 在valueAnimator执行结束后切换ConstraintLayout的ConstraintSet。
+     */
     private void launchAnim() {
         final String welcomeWord = getString(R.string.welcome_word);
         final TextView tvWelcome = findViewById(R.id.mTvWelcome);

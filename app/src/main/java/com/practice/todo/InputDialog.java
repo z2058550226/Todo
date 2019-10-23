@@ -30,7 +30,7 @@ public class InputDialog extends Dialog {
     private TextView btnEnsure;
 
     public InputDialog(@NonNull Activity context, OnSendListener listener) {
-        super(context, R.style.InputDialog);
+        super(context, R.style.InputDialog); // 控制弹窗的样式
         mActivity = context;
         mListener = listener;
     }
@@ -40,7 +40,9 @@ public class InputDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_input);
+        // findViewById
         initView();
+        // 设置弹窗的位置和大小
         Window window = getWindow();
         window.setGravity(Gravity.BOTTOM);
         WindowManager.LayoutParams attributes = window.getAttributes();
@@ -50,6 +52,9 @@ public class InputDialog extends Dialog {
         setListener();
     }
 
+    /**
+     * 展示时插入一段代码，让用户的手机0.15秒之后弹出软键盘
+     */
     @Override
     public void show() {
         super.show();
@@ -62,12 +67,14 @@ public class InputDialog extends Dialog {
     }
 
     private void setListener() {
+        // 监听软键盘的关闭，如果关闭，就将这个弹窗关掉
         KeyboardVisibilityEvent.setEventListener(mActivity, new KeyboardVisibilityEventListener() {
             @Override
             public void onVisibilityChanged(boolean isOpen) {
                 if (!isOpen) dismiss();
             }
         });
+        // 点击确认，判断输入，关闭弹窗
         btnEnsure.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -82,6 +89,7 @@ public class InputDialog extends Dialog {
                 dismiss();
             }
         });
+        // 根据输入框是否有输入来判断确认按钮是否是可点击的(这里多余了，本来想控制一下样式的，可删)
         etInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -101,17 +109,20 @@ public class InputDialog extends Dialog {
         });
     }
 
+    // 获取用户输入的字符串
     private String getInput() {
         String trim = etInput.getText().toString().trim();
         if (TextUtils.isEmpty(trim)) return "";
         else return trim;
     }
 
+    // 关闭软键盘
     private void hideKeyboard(Context context, View view) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
+    // 开启软键盘
     private void openSoftKeyboard(EditText et) {
         if (et == null) return;
         et.setFocusable(true);

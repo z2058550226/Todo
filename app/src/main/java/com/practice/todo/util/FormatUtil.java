@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+//日期格式化
 public final class FormatUtil {
     @SuppressLint("SimpleDateFormat")
     public static String formatToTime(long timeMills) {

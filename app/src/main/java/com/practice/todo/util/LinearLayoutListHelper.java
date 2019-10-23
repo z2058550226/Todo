@@ -8,6 +8,9 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 将LinearLayout当作ListView使用，这里抽象出了一个Adapter
+ */
 public class LinearLayoutListHelper {
     public static void setAdapter(LinearLayout layout, LinearAdapter adapter) {
         layout.removeAllViews();

@@ -20,6 +20,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.practice.todo.util.LocationUtil;
 
+/**
+ * 选择定位页面
+ */
 public class LocationSelActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     public static final String IE_LOCATION = "ie_loc";
@@ -52,20 +55,23 @@ public class LocationSelActivity extends AppCompatActivity implements OnMapReady
             }
         });
 
+        // 初始化google map
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
 
+    // 初始化完成的回调
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         Location curLocation = LocationUtil.getLocation();
+        // 如果能获取到定位，就将视景体移动到用户的位置
         if (curLocation != null) {
             LatLng curLatLng = new LatLng(curLocation.getLatitude(), curLocation.getLongitude());
             mMap.moveCamera(CameraUpdateFactory.newLatLng(curLatLng));
         }
-
+        // 在map上点击可以添加一个目标定位的marker(图标)
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
@@ -80,6 +86,7 @@ public class LocationSelActivity extends AppCompatActivity implements OnMapReady
         });
     }
 
+    // 确认定位
     public void onConfirm(View view) {
         if (mSelectedLocation == null) {
             Toast.makeText(this, "please select a target location", Toast.LENGTH_LONG).show();

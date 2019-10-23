@@ -24,6 +24,10 @@ import com.practice.todo.util.InMemoryCache;
 import com.practice.todo.util.LocationUtil;
 import com.practice.todo.util.RemindUtil;
 
+/**
+ * 定位提醒服务，这里的服务叫做前台服务（Foreground Service），如果程序想要在退出之后继续运行就可以使用这种服务
+ * 和时间提醒服务的原理基本相同，这里定义5秒一次的轮训来判断用户的位置是否是指定经纬度500米以内
+ */
 public class LocationService extends Service {
 
     private static final float DISTANCE_TO_REMIND_IN_METER = 500f;

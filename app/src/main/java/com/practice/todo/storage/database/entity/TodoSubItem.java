@@ -10,6 +10,9 @@ import androidx.room.PrimaryKey;
 
 import static androidx.room.ForeignKey.CASCADE;
 
+/**
+ * 这里使用了外键，在关系型数据库中，不允许实体类中有List，所以都是通过外键来表达一对多的关系，并且方便级联删除
+ */
 @Entity(
         tableName = "todo_sub_item",
         foreignKeys = @ForeignKey(

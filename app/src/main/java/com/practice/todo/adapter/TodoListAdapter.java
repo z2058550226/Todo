@@ -16,7 +16,9 @@ import com.practice.todo.storage.database.entity.TodoItem;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * RecyclerView的适配器
+ */
 public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHolder> {
 
     private List<TodoItem> mDataList = new ArrayList<>();

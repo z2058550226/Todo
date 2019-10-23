@@ -51,6 +51,13 @@ import com.practice.todo.util.LinearLayoutListHelper;
 import java.util.Arrays;
 import java.util.Calendar;
 
+/**
+ * 编辑页面，这个页面主要有以下几个元素
+ * 1、数据库dao
+ * 2、一个控制子事项的LinearLayout，它是通过addView方法来添加子View的
+ * 3、日期选择DatePicker
+ * 4、定位权限获取
+ */
 public class TodoEditActivity extends AppCompatActivity {
 
     private static final String EXT_ITEM_ID = "item_id";
@@ -94,6 +101,9 @@ public class TodoEditActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
+    /**
+     * 权限获取成功
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -121,6 +131,9 @@ public class TodoEditActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 从定位界面回来设置定位提醒
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -151,6 +164,7 @@ public class TodoEditActivity extends AppCompatActivity {
 
         mSubItemAdapter = new SubItemAdapter(this, mLlSubList);
 
+        // 设置toolbar返回事件
         setSupportActionBar(mToolbar);
         ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {
@@ -163,6 +177,7 @@ public class TodoEditActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+        // 删除点击事件
         mBtnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -181,6 +196,7 @@ public class TodoEditActivity extends AppCompatActivity {
                 }).start();
             }
         });
+        // 编辑todo描述
         mEtTodoDescription.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -202,6 +218,7 @@ public class TodoEditActivity extends AppCompatActivity {
                 }).start();
             }
         });
+        // 添加子事项
         mFabAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -224,6 +241,7 @@ public class TodoEditActivity extends AppCompatActivity {
                 }).show();
             }
         });
+        // todo事项是否已完成的标记
         mCbIsDone.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, final boolean isChecked) {
@@ -236,6 +254,7 @@ public class TodoEditActivity extends AppCompatActivity {
                 }).start();
             }
         });
+        // 编辑todo标题
         mEtTitle.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -262,6 +281,7 @@ public class TodoEditActivity extends AppCompatActivity {
                 }
             }
         });
+        // 定位按钮
         mTvRemindByLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -275,6 +295,7 @@ public class TodoEditActivity extends AppCompatActivity {
                 }
             }
         });
+        // 点击开启日期选择
         mTvRemindByTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -297,6 +318,8 @@ public class TodoEditActivity extends AppCompatActivity {
                                     return;
                                 }
                                 mTvRemindTime.setText(FormatUtil.formatToTime(selectedTime.getTimeInMillis()));
+
+                                // 选择完正确的时间，即可开启前台服务进行提醒
                                 Intent serIntent = new Intent(TodoEditActivity.this, RemindService.class);
                                 tempItem.setRemindTimeMillis(selectedTime.getTimeInMillis());
                                 serIntent.putExtra(RemindService.INTENT_EXT_TODO_ITEM, tempItem);
@@ -314,6 +337,7 @@ public class TodoEditActivity extends AppCompatActivity {
         });
     }
 
+    // 刷新界面布局
     private void refreshView() {
         new Thread(new Runnable() {
             @Override
@@ -341,6 +365,7 @@ public class TodoEditActivity extends AppCompatActivity {
         }).start();
     }
 
+    // 开始定位提醒
     private void prepareToLocation(Location targetLocation) {
         mTvLatitude.setText(String.valueOf(targetLocation.getLatitude()));
         mTvLongitude.setText(String.valueOf(targetLocation.getLongitude()));
@@ -351,6 +376,7 @@ public class TodoEditActivity extends AppCompatActivity {
         startService(serIntent);
     }
 
+    // 是否已经授权定位权限
     private boolean isGrantedPms() {
         return ContextCompat.checkSelfPermission(
                 this,
@@ -358,6 +384,7 @@ public class TodoEditActivity extends AppCompatActivity {
         ) == PackageManager.PERMISSION_GRANTED;
     }
 
+    // 子事项的Adapter
     class SubItemAdapter extends LinearLayoutListHelper.SimpleLinearAdapter<ViewHolder, TodoSubItem> {
 
         public SubItemAdapter(Context context, LinearLayout parent) {
@@ -373,6 +400,7 @@ public class TodoEditActivity extends AppCompatActivity {
 
         @Override
         protected void onSimpleBindView(final ViewHolder holder, final TodoSubItem item, int position) {
+            // 局部方法，更新界面，方便下面重用
             final Runnable changeTextStyleAction = new Runnable() {
                 @Override
                 public void run() {
@@ -457,6 +485,9 @@ public class TodoEditActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * ViewHolder就是代表一个ItemView的类，Item的界面可以通过它控制
+     */
     static class ViewHolder extends LinearLayoutListHelper.ViewHolder {
 
         CheckBox mCbSubIsDone;

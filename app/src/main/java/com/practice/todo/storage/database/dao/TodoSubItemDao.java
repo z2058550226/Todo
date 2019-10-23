@@ -8,6 +8,9 @@ import androidx.room.Update;
 
 import com.practice.todo.storage.database.entity.TodoSubItem;
 
+/**
+ * TodoSubItem操作类，这里都只需写出定义即可，真正的实现由编译器帮你实现
+ */
 @Dao
 public interface TodoSubItemDao {
     @Query("SELECT * FROM todo_sub_item WHERE parent_id = :parentId")

@@ -16,10 +16,13 @@ import com.practice.todo.App;
 
 import java.util.List;
 
+//定位工具类
 public class LocationUtil {
 
+    // 主线程handler，确保它执行的代码在主线程执行
     private static Handler sHandler = new Handler(Looper.getMainLooper());
 
+    // 获取用户当前定位
     @Nullable
     public static Location getLocation() {
         Location resultLocation = null;

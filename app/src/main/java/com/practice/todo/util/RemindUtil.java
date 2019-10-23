@@ -16,6 +16,11 @@ import com.practice.todo.MainActivity;
 import com.practice.todo.R;
 import com.practice.todo.storage.database.entity.TodoItem;
 
+/**
+ * 提醒工具类
+ *
+ * 这个app中的提醒是一个通知加上震动，适配Android8.0需要加上Channel。
+ */
 public class RemindUtil {
 
     private static final String NOTIFICATION_CHANNEL_ID = "10051";

@@ -8,6 +8,9 @@ import androidx.room.Update;
 
 import com.practice.todo.storage.database.entity.TodoItem;
 
+/**
+ * TodoItem数据库操作类
+ */
 @Dao
 public interface TodoItemDao {
     @Query("SELECT * FROM todo_item")

@@ -5,7 +5,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
+// RecyclerView的Item的装饰者，用它可以将ItemView边缘增加8dp间隔，然后item之间增加8dp间隔
 public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
     private final int space;
 

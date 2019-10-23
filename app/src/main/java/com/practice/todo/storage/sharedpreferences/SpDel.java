@@ -5,6 +5,9 @@ import android.content.SharedPreferences;
 
 import com.practice.todo.App;
 
+/**
+ * 使用安卓的SharedPreference来存储用户是否第一次登陆。
+ */
 public class SpDel {
 
     private static final String APP_SP = "app_sp";
